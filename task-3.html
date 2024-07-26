@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    body {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: url('https://mouseflow.com/wp-content/uploads/2023/05/How-to-interpret-a-heatmap.png') no-repeat center center fixed;
+        background-size: cover;
+        font-size: 2rem;
+        font-family: sans-serif;
+        color: rgb(7, 9, 10);
+    }
+    .container {
+        height: 30rem;
+        width: 20rem;
+        background-color: rgb(0, 255, 42); 
+        text-align: center;
+        padding-top: 12px;
+        border-radius: 16px;
+        border: 2px solid rgb(30, 95, 0);
+    }
+    .button {
+        margin-top: 20px;
+        background-color: rgb(14, 43, 1);
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1rem;
+    }
+    .button:hover {
+        background-color: rgb(23, 67, 2);
+    }
+    </style>
+</head>
+  
+<body>
+    <div class="container">
+        <div class="icon">---</div>
+        <div class="temp">-°C</div>
+        <div class="summary">----</div>
+        <div class="location"></div>
+        <button class="button" onclick="checkTemperature()">Check Temperature</button>
+    </div>
+    <script>
+        let lon;
+        let lat;
+        let temperature = document.querySelector(".temp");
+        let summary = document.querySelector(".summary");
+        let loc = document.querySelector(".location");
+        let icon = document.querySelector(".icon");
+        const kelvin = 273;
+
+        function checkTemperature() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((position) => {
+                    console.log(position);
+                    lon = position.coords.longitude;
+                    lat = position.coords.latitude;
+                    const api = "6d055e39ee237af35ca066f35474e9df";
+                    const base = 
+                    `http://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${api}`;
+                    fetch(base)
+                        .then((response) => {
+                            return response.json();
+                        })
+                        .then((data) => {
+                            console.log(data);
+                            temperature.textContent = 
+                                Math.floor(data.main.temp - kelvin) + "°C";
+                            summary.textContent = data.weather[0].description;
+                            loc.textContent = data.name + "," + data.sys.country;
+                            let icon1 = data.weather[0].icon;
+                            icon.innerHTML = 
+                                `<img src="http://openweathermap.org/img/wn/${icon1}.png" style='height:10rem'/>`;
+                        });
+                });
+            }
+        }
+    </script>
+</body>
+  
+</html>
